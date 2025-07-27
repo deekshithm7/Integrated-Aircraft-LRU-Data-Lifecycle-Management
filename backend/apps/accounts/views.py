@@ -4,8 +4,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User
-from .serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, ChangePasswordSerializer
+from .models import User,UserSession
+from .serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, ChangePasswordSerializer,UserSessionSerializer
+from .permissions import IsTechnician 
+
+
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -15,7 +18,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class UserProfileView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,IsTechnician]
 
     def get_object(self):
         return self.request.user
@@ -50,3 +53,34 @@ class ChangePasswordView(views.APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActiveSessionsView(generics.ListAPIView):
+    """
+    Lists all active sessions for the current user.
+    """
+    serializer_class = UserSessionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserSession.objects.filter(user=self.request.user).order_by('-last_seen')
+
+class TerminateSessionView(views.APIView):
+    """
+    Terminates a specific session for the current user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            # Ensure the user can only terminate their own sessions
+            session = UserSession.objects.get(pk=pk, user=request.user)
+
+            # We can't directly blacklist the token here, but deleting the record
+            # effectively invalidates it for our management purposes.
+            # A more advanced setup would use Redis to blacklist the JTI.
+            session.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except UserSession.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)

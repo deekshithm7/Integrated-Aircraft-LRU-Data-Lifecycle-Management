@@ -41,3 +41,14 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+class UserSession(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    refresh_token_jti = models.CharField(max_length=255, unique=True)
+    ip_address = models.GenericIPAddressField()
+    user_agent = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.created_at.strftime('%Y-%m-%d %H:%M:%S')}"

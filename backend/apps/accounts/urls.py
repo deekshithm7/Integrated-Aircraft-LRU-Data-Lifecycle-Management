@@ -8,8 +8,12 @@ from .views import (
     CustomTokenObtainPairView,
     UserProfileView,
     LogoutView,
-    ChangePasswordView
+    ChangePasswordView,
+    ActiveSessionsView,
+    TerminateSessionView
 )
+
+
 
 urlpatterns = [
     # Existing endpoints
@@ -20,4 +24,7 @@ urlpatterns = [
     path('profile/', UserProfileView.as_view(), name='user_profile'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
+
+    path('sessions/', ActiveSessionsView.as_view(), name='active_sessions'),
+    path('sessions/<int:pk>/terminate/', TerminateSessionView.as_view(), name='terminate_session'),
 ]

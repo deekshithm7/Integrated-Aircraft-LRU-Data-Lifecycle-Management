@@ -1,11 +1,37 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import User
+from .models import User, UserSession # <-- ADD UserSession
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # The default result (access/refresh tokens)
+        data = super().validate(attrs)
+
+        # Get the refresh token object
+        refresh = self.get_token(self.user)
+
+        # Extract jti (JWT ID) from the refresh token
+        jti = refresh.payload.get('jti')
+
+        # Get IP and User Agent from the request
+        request = self.context['request']
+        ip_address = request.META.get('REMOTE_ADDR')
+        user_agent = request.META.get('HTTP_USER_AGENT')
+
+        # Create the user session record
+        UserSession.objects.create(
+            user=self.user,
+            refresh_token_jti=jti,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+
+        return data
+
     @classmethod
     def get_token(cls, user):
+        # This method remains the same
         token = super().get_token(user)
         token['role'] = user.role
         token['can_approve_installations'] = user.can_approve_installations
@@ -39,3 +65,8 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"new_password": "New passwords must match."})
         validate_password(data['new_password'])
         return data
+
+class UserSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSession
+        fields = ['id', 'ip_address', 'user_agent', 'last_seen']
