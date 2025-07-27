@@ -5,30 +5,23 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import User
-from .serializers import CustomTokenObtainPairSerializer, UserProfileSerializer
+from .serializers import CustomTokenObtainPairSerializer, UserProfileSerializer, ChangePasswordSerializer
 
-# This view remains the same
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-# --- NEW: User Profile View ---
+
 class UserProfileView(generics.RetrieveUpdateAPIView):
-    """
-    Handles retrieving and updating the logged-in user's profile.
-    """
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        # Returns the user object for the currently authenticated user
         return self.request.user
 
-# --- NEW: Logout View ---
+
 class LogoutView(views.APIView):
-    """
-    Handles user logout by blacklisting the refresh token.
-    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -39,3 +32,21 @@ class LogoutView(views.APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        serializer = ChangePasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+            if not user.check_password(serializer.validated_data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user.set_password(serializer.validated_data.get("new_password"))
+            user.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
