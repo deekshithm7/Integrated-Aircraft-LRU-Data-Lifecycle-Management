@@ -27,3 +27,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'can_approve_installations', 'can_override_validations',
             'last_login'
         ]
+        # Users can't change these fields for themselves
+        read_only_fields = [
+            'id', 'username', 'role', 'last_login',
+            'can_approve_installations', 'can_override_validations'
+        ]
