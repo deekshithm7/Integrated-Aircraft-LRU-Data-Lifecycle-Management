@@ -15,13 +15,14 @@ services:
     networks:
       - lru_network
 
-  redis:
-    image: redis:7-alpine
-    container_name: lru_redis
-    ports:
-      - "6379:6379"
-    networks:
-      - lru_network
+  # --- CHANGE HERE: Redis service commented out ---
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: lru_redis
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - lru_network
 
   backend:
     build:
@@ -31,13 +32,12 @@ services:
     env_file:
       - .env
     volumes:
-      # Mounts the backend code into the container for hot-reloading
       - ./backend:/app
     ports:
       - "8000:8000"
+    # --- CHANGE HERE: Removed redis from depends_on ---
     depends_on:
       - db
-      - redis
     networks:
       - lru_network
     command: python manage.py runserver 0.0.0.0:8000
@@ -50,12 +50,9 @@ services:
     env_file:
       - .env
     volumes:
-      # Mounts the frontend code for hot-reloading
       - ./frontend:/app
-      # Prevents the local node_modules from overwriting the container's
       - /app/node_modules
     ports:
-      # Maps the container's port 3000 to the host's port 3000
       - "3000:3000"
     depends_on:
       - backend
