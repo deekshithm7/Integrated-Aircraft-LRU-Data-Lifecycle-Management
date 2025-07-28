@@ -73,12 +73,10 @@ class TerminateSessionView(views.APIView):
 
     def delete(self, request, pk, *args, **kwargs):
         try:
-            # Ensure the user can only terminate their own sessions
+            
             session = UserSession.objects.get(pk=pk, user=request.user)
 
-            # We can't directly blacklist the token here, but deleting the record
-            # effectively invalidates it for our management purposes.
-            # A more advanced setup would use Redis to blacklist the JTI.
+            
             session.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)

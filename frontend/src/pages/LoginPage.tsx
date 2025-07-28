@@ -14,10 +14,10 @@ export const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Mock login logic - replace with your actual login implementation
+      
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Login successful');
-      // navigate('/'); - implement your navigation logic
+      
     } catch (err) {
       setError('Failed to log in. Please check your credentials.');
     } finally {
@@ -27,17 +27,17 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
-      {/* Background Elements */}
+      
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-4 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
         <div className="absolute -bottom-8 -right-4 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"></div>
       </div>
 
-      {/* Login Card */}
+     
       <div className="relative w-full max-w-md">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
-          {/* Logo/Header */}
+         
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mx-auto mb-4 flex items-center justify-center">
               <Lock className="w-8 h-8 text-white" />
@@ -47,7 +47,7 @@ export const LoginPage = () => {
           </div>
 
           <div className="space-y-6">
-            {/* Username Field */}
+            
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-200">Username</label>
               <div className="relative">
@@ -63,7 +63,7 @@ export const LoginPage = () => {
               </div>
             </div>
 
-            {/* Password Field */}
+            
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-200">Password</label>
               <div className="relative">
@@ -86,7 +86,7 @@ export const LoginPage = () => {
               </div>
             </div>
 
-            {/* Error Message */}
+            
             {error && (
               <div className="flex items-center space-x-2 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
                 <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
@@ -94,7 +94,7 @@ export const LoginPage = () => {
               </div>
             )}
 
-            {/* Submit Button */}
+            
             <button
               type="button"
               onClick={handleSubmit}
@@ -111,7 +111,7 @@ export const LoginPage = () => {
               )}
             </button>
 
-            {/* Additional Links */}
+            
             <div className="text-center pt-4">
               <a href="#" className="text-sm text-gray-300 hover:text-white transition-colors duration-200">
                 Forgot your password?
@@ -120,7 +120,7 @@ export const LoginPage = () => {
           </div>
         </div>
 
-        {/* Footer */}
+        
         <div className="text-center mt-6">
           <p className="text-gray-400 text-sm">
             Don't have an account?{' '}

@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from .models import User
 
-# This mark tells pytest that all tests in this module need database access
+
 pytestmark = pytest.mark.django_db
 
 
@@ -37,7 +37,7 @@ def test_get_profile_unauthenticated():
     client = APIClient()
     response = client.get('/api/v1/auth/profile/')
     
-    # Assert that the request was unauthorized
+    
     assert response.status_code == 401
 
 def test_get_profile_authenticated():
@@ -47,12 +47,12 @@ def test_get_profile_authenticated():
     client = APIClient()
     user = User.objects.create_user(username='authtest', password='password123')
     
-    # Authenticate the client
+    
     client.force_authenticate(user=user)
     
     response = client.get('/api/v1/auth/profile/')
     
-    # Assert that the request was successful
+    
     assert response.status_code == 200
     assert response.data['username'] == 'authtest'
 
@@ -68,16 +68,16 @@ def test_update_profile():
     )
     client.force_authenticate(user=user)
     
-    # Attempt to update the user's first name
+    
     response = client.put('/api/v1/auth/profile/', {
         'first_name': 'Updated',
         'last_name': 'Name'
     }, format='json')
     
-    # Assert the request was successful and the data was updated
+    
     assert response.status_code == 200
     assert response.data['first_name'] == 'Updated'
     
-    # Verify the change was saved to the database
+    
     user.refresh_from_db()
     assert user.first_name == 'Updated'
