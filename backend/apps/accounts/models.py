@@ -46,7 +46,7 @@ class UserSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     refresh_token_jti = models.CharField(max_length=255, unique=True)
     ip_address = models.GenericIPAddressField()
-    user_agent = models.CharField(max_length=255)
+    user_agent = models.CharField(max_length=255,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(auto_now=True)
 
